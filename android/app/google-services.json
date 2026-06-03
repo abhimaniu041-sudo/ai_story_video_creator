@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "954555401149",
+    "project_id": "ai-story-video-creator-f7a2f",
+    "storage_bucket": "ai-story-video-creator-f7a2f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954555401149:android:011c31e9dcdb9d3a4288d4",
+        "android_client_info": {
+          "package_name": "com.example.ai_story_video_creator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbqdshQTCfsI_RqYsDU4jy3byBFakNX3k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
