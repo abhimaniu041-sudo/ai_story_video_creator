@@ -38,8 +38,6 @@ jobs:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
-          echo "google-services.json created"
-          cat android/app/google-services.json | head -5
 
       - name: Create Firebase Options
         run: |
@@ -52,11 +50,11 @@ jobs:
               return android;
             }
             static const FirebaseOptions android = FirebaseOptions(
-              apiKey: 'placeholder-key',
-              appId: '1:000000000000:android:0000000000000000',
-              messagingSenderId: '000000000000',
-              projectId: 'placeholder-project',
-              storageBucket: 'placeholder-project.appspot.com',
+              apiKey: 'AIzaSyCbqdshQTCfsI_RqYsDU4jy3byBFakNX3k',
+              appId: '1:954555401149:android:011c31e9dcdb9d3a4288d4',
+              messagingSenderId: '954555401149',
+              projectId: 'ai-story-video-creator-f7a2f',
+              storageBucket: 'ai-story-video-creator-f7a2f.firebasestorage.app',
             );
           }
           DART_EOF
@@ -72,6 +70,68 @@ jobs:
           touch assets/characters/.gitkeep
           touch assets/music/.gitkeep
           touch assets/animations/.gitkeep
+
+      - name: Create Android Resources
+        run: |
+          mkdir -p android/app/src/main/res/values
+          cat > android/app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+                  <item name="android:windowBackground">@drawable/launch_background</item>
+              </style>
+              <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+                  <item name="android:windowBackground">@android:color/black</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > android/app/src/main/res/values/colors.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="ic_launcher_background">#0A0A0F</color>
+          </resources>
+          EOF
+
+          mkdir -p android/app/src/main/res/drawable
+          cat > android/app/src/main/res/drawable/launch_background.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:drawable="@android:color/black" />
+          </layer-list>
+          EOF
+
+          cat > android/app/src/main/res/drawable/ic_launcher_foreground.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <path android:fillColor="#FF6B35"
+                  android:pathData="M54,20 C35.2,20 20,35.2 20,54 C20,72.8 35.2,88 54,88 C72.8,88 88,72.8 88,54 C88,35.2 72.8,20 54,20Z"/>
+              <path android:fillColor="#FFFFFF"
+                  android:pathData="M44,40 L44,68 L70,54 Z"/>
+          </vector>
+          EOF
+
+          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            mkdir -p android/app/src/main/res/mipmap-$density
+            cat > android/app/src/main/res/mipmap-$density/ic_launcher.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background"/>
+              <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+          </adaptive-icon>
+          EOF
+            cat > android/app/src/main/res/mipmap-$density/ic_launcher_round.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background"/>
+              <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+          </adaptive-icon>
+          EOF
+          done
 
       - name: Create local.properties
         run: |
