@@ -67,6 +67,13 @@ jobs:
           touch assets/music/.gitkeep
           touch assets/animations/.gitkeep
 
+      - name: Create local.properties
+        run: |
+          echo "flutter.sdk=$(which flutter | sed 's|/bin/flutter||')" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+          echo "flutter.versionName=1.0.0" >> android/local.properties
+          echo "flutter.versionCode=1" >> android/local.properties
+
       - name: Get Flutter Dependencies
         run: flutter pub get
 
@@ -115,12 +122,7 @@ jobs:
             build/app/outputs/flutter-apk/app-debug.apk
           body: |
             ## AI Story Video Creator
-            Build Number: ${{ github.run_number }}
+            Build: ${{ github.run_number }}
             Commit: ${{ github.sha }}
-            Branch: ${{ github.ref_name }}
-
-            ### Download
-            - **app-release.apk** - Production build
-            - **app-debug.apk** - Debug build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
