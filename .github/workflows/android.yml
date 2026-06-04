@@ -43,21 +43,21 @@ jobs:
         run: |
           mkdir -p lib
           cat > lib/firebase_options.dart << 'DART_EOF'
-          import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 
-          class DefaultFirebaseOptions {
-            static FirebaseOptions get currentPlatform {
-              return android;
-            }
-            static const FirebaseOptions android = FirebaseOptions(
-              apiKey: 'AIzaSyCbqdshQTCfsI_RqYsDU4jy3byBFakNX3k',
-              appId: '1:954555401149:android:011c31e9dcdb9d3a4288d4',
-              messagingSenderId: '954555401149',
-              projectId: 'ai-story-video-creator-f7a2f',
-              storageBucket: 'ai-story-video-creator-f7a2f.firebasestorage.app',
-            );
-          }
-          DART_EOF
+class DefaultFirebaseOptions {
+  static FirebaseOptions get currentPlatform {
+    return android;
+  }
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCbqdshQTCfsI_RqYsDU4jy3byBFakNX3k',
+    appId: '1:954555401149:android:011c31e9dcdb9d3a4288d4',
+    messagingSenderId: '954555401149',
+    projectId: 'ai-story-video-creator-f7a2f',
+    storageBucket: 'ai-story-video-creator-f7a2f.firebasestorage.app',
+  );
+}
+DART_EOF
 
       - name: Create Asset Directories
         run: |
@@ -75,63 +75,70 @@ jobs:
         run: |
           mkdir -p android/app/src/main/res/values
           cat > android/app/src/main/res/values/styles.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
-                  <item name="android:windowBackground">@drawable/launch_background</item>
-              </style>
-              <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
-                  <item name="android:windowBackground">@android:color/black</item>
-              </style>
-          </resources>
-          EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>
+EOF
 
           cat > android/app/src/main/res/values/colors.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <color name="ic_launcher_background">#0A0A0F</color>
-          </resources>
-          EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0A0A0F</color>
+</resources>
+EOF
 
           mkdir -p android/app/src/main/res/drawable
           cat > android/app/src/main/res/drawable/launch_background.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-              <item android:drawable="@android:color/black" />
-          </layer-list>
-          EOF
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/black" />
+</layer-list>
+EOF
 
-          cat > android/app/src/main/res/drawable/ic_launcher_foreground.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp"
-              android:height="108dp"
-              android:viewportWidth="108"
-              android:viewportHeight="108">
-              <path android:fillColor="#FF6B35"
-                  android:pathData="M54,20 C35.2,20 20,35.2 20,54 C20,72.8 35.2,88 54,88 C72.8,88 88,72.8 88,54 C88,35.2 72.8,20 54,20Z"/>
-              <path android:fillColor="#FFFFFF"
-                  android:pathData="M44,40 L44,68 L70,54 Z"/>
-          </vector>
-          EOF
+          python3 << 'PYEOF'
+import struct, zlib, os
 
-          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
-            mkdir -p android/app/src/main/res/mipmap-$density
-            cat > android/app/src/main/res/mipmap-$density/ic_launcher.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/ic_launcher_background"/>
-              <foreground android:drawable="@drawable/ic_launcher_foreground"/>
-          </adaptive-icon>
-          EOF
-            cat > android/app/src/main/res/mipmap-$density/ic_launcher_round.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/ic_launcher_background"/>
-              <foreground android:drawable="@drawable/ic_launcher_foreground"/>
-          </adaptive-icon>
-          EOF
-          done
+def create_png(size, output_path):
+    def png_chunk(chunk_type, data):
+        c = chunk_type + data
+        return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
+    width = height = size
+    pixels = []
+    for y in range(height):
+        row = b'\x00'
+        for x in range(width):
+            cx = x - width // 2
+            cy = y - height // 2
+            if cx*cx + cy*cy <= (width // 2) ** 2 * 0.6:
+                row += bytes([255, 107, 53, 255])
+            else:
+                row += bytes([10, 10, 15, 255])
+        pixels.append(row)
+    raw = b''.join(pixels)
+    compressed = zlib.compress(raw)
+    ihdr_data = struct.pack('>IIBBBBB', width, height, 8, 6, 0, 0, 0)
+    png = (b'\x89PNG\r\n\x1a\n' +
+           png_chunk(b'IHDR', ihdr_data) +
+           png_chunk(b'IDAT', compressed) +
+           png_chunk(b'IEND', b''))
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, 'wb') as f:
+        f.write(png)
+    print(f"Created: {output_path}")
+
+sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
+base = 'android/app/src/main/res'
+for density, size in sizes.items():
+    create_png(size, f'{base}/mipmap-{density}/ic_launcher.png')
+    create_png(size, f'{base}/mipmap-{density}/ic_launcher_round.png')
+print("All icons created")
+PYEOF
 
       - name: Create local.properties
         run: |
