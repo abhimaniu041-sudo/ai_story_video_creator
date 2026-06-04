@@ -44,7 +44,7 @@ class VoiceService {
     return filePath;
   }
 
-  void _setPitch(String gender, String emotion) async {
+  Future<void> _setPitch(String gender, String emotion) async {
     switch (gender.toLowerCase()) {
       case 'female':
         await _tts.setPitch(1.3);
@@ -70,6 +70,8 @@ class VoiceService {
         break;
       case 'happy':
         await _tts.setSpeechRate(0.95);
+        break;
+      default:
         break;
     }
   }
