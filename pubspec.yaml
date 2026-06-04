@@ -31,9 +31,6 @@ dependencies:
   video_player: ^2.8.1
   just_audio: ^0.9.36
 
-  # FFmpeg
-  ffmpeg_kit_flutter: ^6.0.3
-
   # TTS
   flutter_tts: ^3.8.5
 
@@ -45,7 +42,6 @@ dependencies:
   uuid: ^4.2.2
   json_annotation: ^4.8.1
   permission_handler: ^11.1.0
-  image: ^4.1.3
   connectivity_plus: ^5.0.2
   logger: ^2.0.2+1
 
