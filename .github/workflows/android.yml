@@ -34,10 +34,16 @@ jobs:
           cache: true
 
       - name: Create google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          echo "google-services.json created"
+          cat android/app/google-services.json | head -5
 
       - name: Create Firebase Options
         run: |
+          mkdir -p lib
           cat > lib/firebase_options.dart << 'DART_EOF'
           import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 
@@ -69,7 +75,8 @@ jobs:
 
       - name: Create local.properties
         run: |
-          echo "flutter.sdk=$(which flutter | sed 's|/bin/flutter||')" > android/local.properties
+          FLUTTER_PATH=$(which flutter | sed 's|/bin/flutter||')
+          echo "flutter.sdk=$FLUTTER_PATH" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
           echo "flutter.versionName=1.0.0" >> android/local.properties
           echo "flutter.versionCode=1" >> android/local.properties
